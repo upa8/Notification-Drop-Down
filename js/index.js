@@ -130,19 +130,33 @@ app.controller('demoController', function($scope){
         return newNotification;
     };
 
-    //This function calls itslef after random interval
+
     var dummyPolling = function(){
+        // TODO:
+        // we can convert this logic to socket which is more efficient
+        // I choose to do it via polling as it was easy to implement
+        // I will refactor it to socket once I complete the task and I get more time
         var randomInterval = 2*Math.round(Math.random() * (3000 - 500)) + 1000;
         setTimeout(function() {
             $scope.$apply(function(){
-                $scope.newNotifications.push(getNewNotification());
-                $scope.awaitingNotifications++;
-                localStorage.setItem('newNotifications', JSON.stringify($scope.newNotifications));
-                localStorage.setItem('awaitingNotifications', JSON.stringify($scope.awaitingNotifications));
+                console.log(randomInterval);
+                // if there is new notification, then update this, otherwise no.
+                console.log(randomInterval);
+                if(newNotificationRecieved(randomInterval)){
+                    $scope.newNotifications.push(getNewNotification());
+                    $scope.awaitingNotifications++;
+                    localStorage.setItem('newNotifications', JSON.stringify($scope.newNotifications));
+                    localStorage.setItem('awaitingNotifications', JSON.stringify($scope.awaitingNotifications));
+                }else{
+                    console.log("No new notification");
+                }
             });
-            console.log("dummy poll called after "+randomInterval+"ms");
             dummyPolling();
         }, randomInterval);
+    }
+    function newNotificationRecieved(temp) {
+        // make an ajax call to check whether new notification is present or not
+        return temp%5 == 0;
     }
 
     window.onclick = function(event){
